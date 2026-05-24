@@ -1,0 +1,15 @@
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\bin\Debug\net8.0\YouInControl.Application.deps.json
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\bin\Debug\net8.0\YouInControl.Application.dll
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\bin\Debug\net8.0\YouInControl.Application.pdb
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\bin\Debug\net8.0\YouInControl.Domain.dll
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\bin\Debug\net8.0\YouInControl.Domain.pdb
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInControl.Application.csproj.AssemblyReference.cache
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInControl.Application.GeneratedMSBuildEditorConfig.editorconfig
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInControl.Application.AssemblyInfoInputs.cache
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInControl.Application.AssemblyInfo.cs
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInControl.Application.csproj.CoreCompileInputs.cache
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInCon.5DD9B666.Up2Date
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInControl.Application.dll
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\refint\YouInControl.Application.dll
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\YouInControl.Application.pdb
+G:\Estudos\YouInControl\backend\YouInControl\YouInControl.Application\obj\Debug\net8.0\ref\YouInControl.Application.dll

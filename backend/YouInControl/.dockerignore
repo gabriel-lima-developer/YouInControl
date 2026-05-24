@@ -1,0 +1,9 @@
+**/.dockerignore
+**/.git
+**/.idea
+**/.vs
+**/bin
+**/obj
+**/TestResults
+docker-compose*.yml
+README.md

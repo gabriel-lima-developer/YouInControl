@@ -1,6 +1,26 @@
 # YouInControl
 
-YouInControl e um app pessoal de organizacao da vida. Este primeiro piloto implementa apenas o modulo Mercado, com foco em listas de compras.
+YouInControl e um app pessoal de organizacao da vida. O piloto atual implementa o modulo Mercado, com foco em listas de compras.
+
+## Estrutura
+
+```text
+YouInControl/
+  backend/
+    YouInControl/
+      YouInControl.sln
+      YouInControl.Api/
+      YouInControl.Application/
+      YouInControl.Domain/
+      YouInControl.Infrastructure/
+      docker-compose.yml
+  frontend/
+    youincontrol-web/
+      package.json
+      src/
+  README.md
+  .gitignore
+```
 
 ## Stack
 
@@ -10,17 +30,25 @@ YouInControl e um app pessoal de organizacao da vida. Este primeiro piloto imple
 - PostgreSQL
 - Swagger
 - Docker e Docker Compose
+- React
+- TypeScript
+- Vite
 
 ## Arquitetura
 
-O backend esta em `backend/YouInControl` e segue um monolito modular simples:
+O repositorio usa uma organizacao de monorepo simples:
 
-- `YouInControl.Api`: controllers, Swagger, configuracao HTTP e bootstrap.
+- `backend/YouInControl`: BFF/API .NET e solution principal.
+- `frontend/youincontrol-web`: app React que consome o BFF por HTTP.
+
+O backend segue um monolito modular simples:
+
+- `YouInControl.Api`: controllers, Swagger, CORS, configuracao HTTP e bootstrap.
 - `YouInControl.Application`: DTOs, casos de uso e contratos de repositorio.
 - `YouInControl.Domain`: entidades, enum e regras de dominio.
 - `YouInControl.Infrastructure`: EF Core, PostgreSQL, migrations e repositorios.
 
-## Como rodar com Docker
+## Como rodar o backend com Docker
 
 ```bash
 cd backend/YouInControl
@@ -44,9 +72,9 @@ Para remover tambem o volume do PostgreSQL:
 docker compose down -v
 ```
 
-## Como rodar localmente
+## Como rodar o backend localmente
 
-Suba apenas o PostgreSQL pelo Compose ou use uma instancia local compativel com a connection string em `YouInControl.Api/appsettings.json`.
+Suba apenas o PostgreSQL pelo Compose ou use uma instancia local compativel com a connection string em `backend/YouInControl/YouInControl.Api/appsettings.json`.
 
 ```bash
 cd backend/YouInControl
@@ -58,6 +86,32 @@ dotnet run --project YouInControl.Api/YouInControl.Api.csproj
 Swagger local:
 
 - `http://localhost:5080/swagger`
+
+## Como rodar o frontend
+
+```bash
+cd frontend/youincontrol-web
+npm install
+npm run dev
+```
+
+O frontend roda em:
+
+- `http://localhost:5173`
+
+O app usa `VITE_API_BASE_URL` para encontrar o BFF. Para o backend local, use:
+
+```env
+VITE_API_BASE_URL=http://localhost:5080
+```
+
+Para o backend via Docker, use:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+Existe um exemplo em `frontend/youincontrol-web/.env.example`.
 
 ## Migrations
 
@@ -95,7 +149,6 @@ No Docker, a API aplica migrations automaticamente no startup via `Database__App
 ## Proximos passos planejados
 
 - Expandir o modulo Mercado com categorias, recorrencia e historico de compras.
-- Adicionar testes automatizados para dominio, aplicacao e API.
-- Criar frontend para uso pessoal.
+- Adicionar testes automatizados para dominio, aplicacao, API e frontend.
 - Evoluir a organizacao modular antes de considerar servicos separados.
 - Adicionar autenticacao quando houver necessidade real de multiusuario.

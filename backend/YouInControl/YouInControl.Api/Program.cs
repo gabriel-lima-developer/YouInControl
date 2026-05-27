@@ -6,6 +6,8 @@ using YouInControl.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const string FrontendCorsPolicy = "Frontend";
+
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>
@@ -15,6 +17,17 @@ builder.Services
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(FrontendCorsPolicy, policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -30,6 +43,8 @@ if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseCors(FrontendCorsPolicy);
 
 app.MapControllers();
 

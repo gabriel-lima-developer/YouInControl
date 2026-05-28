@@ -12,6 +12,7 @@ Analisar todas as alterações não commitadas da branch atual, entender o prop�
 * Não criar commits antes de analisar todas as alterações.
 * Não usar `git add .` para tudo de uma vez, exceto se existir apenas um único grupo lógico de mudanças.
 * Não criar commits genéricos como `update`, `changes`, `fix stuff`, `wip` ou similares.
+* Escrever a descrição curta e o corpo dos commits em pt-BR.
 * Não reescrever commits antigos sem autorização explícita.
 * Não usar squash sem autorização explícita.
 * Não alterar código desnecessariamente apenas para encaixar commits.
@@ -83,6 +84,8 @@ Usar o formato:
 ```text
 tipo(escopo): descrição curta
 ```
+
+Manter `tipo` e `escopo` em inglês conforme o padrão Conventional Commits, mas escrever a descrição curta e o corpo em pt-BR.
 
 Tipos permitidos:
 

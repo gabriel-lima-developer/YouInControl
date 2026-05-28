@@ -12,10 +12,10 @@ export function formatDate(value: string | null) {
   return dateFormatter.format(new Date(value));
 }
 
-export function formatQuantity(quantity: number | null, unit: string | null) {
-  if (quantity === null && !unit) {
+export function formatQuantity(quantity: number | null) {
+  if (quantity === null) {
     return 'Sem quantidade';
   }
 
-  return [quantity, unit].filter((part) => part !== null && part !== '').join(' ');
+  return quantity.toLocaleString('pt-BR');
 }

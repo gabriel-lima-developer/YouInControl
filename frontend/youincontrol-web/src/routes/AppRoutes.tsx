@@ -1,17 +1,25 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { ShoppingListDetailsPage } from '../features/shopping-lists/pages/ShoppingListDetailsPage';
+import { ShoppingListsPage } from '../features/shopping-lists/pages/ShoppingListsPage';
 import { AppLayout } from '../layouts/AppLayout';
-import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { ShoppingListDetailPage } from '../pages/ShoppingListDetailPage';
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="lists/:id" element={<ShoppingListDetailPage />} />
+        <Route index element={<Navigate replace to="/shopping-lists" />} />
+        <Route path="shopping-lists" element={<ShoppingListsPage />} />
+        <Route path="shopping-lists/:id" element={<ShoppingListDetailsPage />} />
+        <Route path="lists/:id" element={<LegacyShoppingListRedirect />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );
+}
+
+function LegacyShoppingListRedirect() {
+  const { id = '' } = useParams();
+
+  return <Navigate replace to={`/shopping-lists/${id}`} />;
 }

@@ -35,6 +35,8 @@ O backend segue Clean Architecture:
 
 ## Como rodar localmente
 
+### Backend
+
 ```bash
 cd backend/YouInControl
 docker compose up -d postgres
@@ -44,6 +46,32 @@ dotnet run --project YouInControl.Api/YouInControl.Api.csproj
 
 - API: `http://localhost:5080`
 - Swagger: `http://localhost:5080/swagger`
+
+### Frontend
+
+```bash
+cd frontend/youincontrol-web
+npm install
+npm run dev
+```
+
+- Frontend: `http://localhost:5173`
+- BFF local padrao: `http://localhost:5080`
+
+Configure a URL do BFF com `VITE_API_BASE_URL`. Use `frontend/youincontrol-web/.env.example` como referencia:
+
+```env
+VITE_API_BASE_URL=http://localhost:5080
+```
+
+Build do frontend:
+
+```bash
+cd frontend/youincontrol-web
+npm run build
+```
+
+O frontend ainda nao possui scripts de lint ou testes automatizados no `package.json`.
 
 ## Como rodar com Docker
 
@@ -100,6 +128,11 @@ dotnet test
 - Arquitetura: `docs/architecture.md`
 - Endpoints de listas de compras: `docs/api/shopping-lists.md`
 - Decisoes arquiteturais: `docs/adr/`
+- Arquitetura do frontend: `docs/frontend/architecture.md`
+- Integracao frontend/BFF: `docs/frontend/api-integration.md`
+- Feature de listas no frontend: `docs/frontend/shopping-lists-feature.md`
+- Ambiente do frontend: `docs/frontend/environment.md`
+- Testes do frontend: `docs/frontend/testing.md`
 
 ## Autenticacao
 

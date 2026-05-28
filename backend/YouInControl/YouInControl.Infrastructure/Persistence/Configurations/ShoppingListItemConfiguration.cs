@@ -13,7 +13,8 @@ internal sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<S
         builder.HasKey(item => item.Id);
 
         builder.Property(item => item.Id)
-            .HasColumnName("id");
+            .HasColumnName("id")
+            .ValueGeneratedNever();
 
         builder.Property(item => item.ShoppingListId)
             .HasColumnName("shopping_list_id")

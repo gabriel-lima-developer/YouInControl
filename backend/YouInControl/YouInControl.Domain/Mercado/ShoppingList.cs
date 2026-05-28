@@ -5,6 +5,7 @@ namespace YouInControl.Domain.Mercado;
 public sealed class ShoppingList
 {
     private readonly List<ShoppingListItem> _items = [];
+    private const int MaxTitleLength = 200;
 
     private ShoppingList()
     {
@@ -15,6 +16,11 @@ public sealed class ShoppingList
         if (string.IsNullOrWhiteSpace(title))
         {
             throw new DomainException("Shopping list title is required.");
+        }
+
+        if (title.Trim().Length > MaxTitleLength)
+        {
+            throw new DomainException($"Shopping list title must have at most {MaxTitleLength} characters.");
         }
 
         Id = Guid.NewGuid();
@@ -30,11 +36,37 @@ public sealed class ShoppingList
     public DateTime? UpdatedAt { get; private set; }
     public IReadOnlyCollection<ShoppingListItem> Items => _items;
 
-    public ShoppingListItem AddItem(string name, decimal? quantity, string? unit)
+    public void Update(string title)
     {
-        var item = new ShoppingListItem(Id, name, quantity, unit);
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            throw new DomainException("Shopping list title is required.");
+        }
+
+        if (title.Trim().Length > MaxTitleLength)
+        {
+            throw new DomainException($"Shopping list title must have at most {MaxTitleLength} characters.");
+        }
+
+        Title = title.Trim();
+        Touch();
+    }
+
+    public ShoppingListItem AddItem(string description, decimal quantity)
+    {
+        var nextOrder = _items.Count == 0 ? 1 : _items.Max(item => item.Order) + 1;
+        var item = new ShoppingListItem(Id, description, quantity, nextOrder);
 
         _items.Add(item);
+        Touch();
+
+        return item;
+    }
+
+    public ShoppingListItem UpdateItem(Guid itemId, string description, decimal quantity)
+    {
+        var item = GetItem(itemId);
+        item.Update(description, quantity);
         Touch();
 
         return item;
@@ -63,6 +95,37 @@ public sealed class ShoppingList
         var item = GetItem(itemId);
 
         _items.Remove(item);
+        Touch();
+    }
+
+    public void ReorderItems(IReadOnlyCollection<(Guid ItemId, int Order)> itemOrders)
+    {
+        if (itemOrders.Count == 0)
+        {
+            throw new DomainException("At least one item must be informed to reorder shopping list items.");
+        }
+
+        if (itemOrders.Any(itemOrder => itemOrder.Order <= 0))
+        {
+            throw new DomainException("Shopping list item order must be greater than zero.");
+        }
+
+        if (itemOrders.Select(itemOrder => itemOrder.ItemId).Distinct().Count() != itemOrders.Count)
+        {
+            throw new DomainException("Shopping list item reorder request contains duplicated item ids.");
+        }
+
+        if (itemOrders.Select(itemOrder => itemOrder.Order).Distinct().Count() != itemOrders.Count)
+        {
+            throw new DomainException("Shopping list item reorder request contains duplicated orders.");
+        }
+
+        foreach (var itemOrder in itemOrders)
+        {
+            var item = GetItem(itemOrder.ItemId);
+            item.UpdateOrder(itemOrder.Order);
+        }
+
         Touch();
     }
 

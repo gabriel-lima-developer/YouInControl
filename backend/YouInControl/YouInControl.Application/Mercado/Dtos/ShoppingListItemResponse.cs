@@ -3,9 +3,9 @@ namespace YouInControl.Application.Mercado.Dtos;
 public sealed record ShoppingListItemResponse(
     Guid Id,
     Guid ShoppingListId,
-    string Name,
-    decimal? Quantity,
-    string? Unit,
+    string Description,
+    decimal Quantity,
+    int Order,
     bool IsCompleted,
     DateTime CreatedAt,
     DateTime? UpdatedAt,

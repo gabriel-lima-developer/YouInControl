@@ -19,18 +19,19 @@ internal sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<S
             .HasColumnName("shopping_list_id")
             .IsRequired();
 
-        builder.Property(item => item.Name)
+        builder.Property(item => item.Description)
             .HasColumnName("name")
             .HasMaxLength(200)
             .IsRequired();
 
         builder.Property(item => item.Quantity)
             .HasColumnName("quantity")
-            .HasColumnType("numeric(18,2)");
+            .HasColumnType("numeric(18,2)")
+            .IsRequired();
 
-        builder.Property(item => item.Unit)
-            .HasColumnName("unit")
-            .HasMaxLength(50);
+        builder.Property(item => item.Order)
+            .HasColumnName("order")
+            .IsRequired();
 
         builder.Property(item => item.IsCompleted)
             .HasColumnName("is_completed")

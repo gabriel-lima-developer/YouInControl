@@ -2,10 +2,9 @@ using YouInControl.Domain.Mercado;
 
 namespace YouInControl.Application.Mercado.Dtos;
 
-public sealed record ShoppingListDetailResponse(
+public sealed record ShoppingListResponse(
     Guid Id,
-    string Title,
+    string Name,
     ShoppingListStatus Status,
     DateTime CreatedAt,
-    DateTime? UpdatedAt,
-    IReadOnlyCollection<ShoppingListItemResponse> Items);
+    DateTime? UpdatedAt);

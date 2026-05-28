@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using YouInControl.Application.Common;
 using YouInControl.Application.Mercado.Dtos;
 using YouInControl.Application.Mercado.Services;
 
@@ -7,7 +6,7 @@ namespace YouInControl.Api.Controllers;
 
 [ApiController]
 [Route("api/shopping-lists")]
-public sealed class ShoppingListsController : ControllerBase
+public sealed class ShoppingListsController : ApiControllerBase
 {
     private readonly IShoppingListService _shoppingListService;
 
@@ -16,11 +15,12 @@ public sealed class ShoppingListsController : ControllerBase
         _shoppingListService = shoppingListService;
     }
 
+    /// <summary>Cria uma lista de compras.</summary>
     [HttpPost]
-    [ProducesResponseType(typeof(ShoppingListSummaryResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ShoppingListResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ShoppingListSummaryResponse>> Create(
-        CreateShoppingListRequest request,
+    public async Task<ActionResult<ShoppingListResponse>> Create(
+        [FromBody] CreateShoppingListRequest request,
         CancellationToken cancellationToken)
     {
         var result = await _shoppingListService.CreateAsync(request, cancellationToken);
@@ -33,9 +33,10 @@ public sealed class ShoppingListsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
     }
 
+    /// <summary>Lista as listas de compras cadastradas.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyCollection<ShoppingListSummaryResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<ShoppingListSummaryResponse>>> GetAll(
+    [ProducesResponseType(typeof(IReadOnlyCollection<ShoppingListResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<ShoppingListResponse>>> GetAll(
         CancellationToken cancellationToken)
     {
         var shoppingLists = await _shoppingListService.GetAllAsync(cancellationToken);
@@ -43,10 +44,11 @@ public sealed class ShoppingListsController : ControllerBase
         return Ok(shoppingLists);
     }
 
+    /// <summary>Consulta uma lista de compras com seus itens.</summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(ShoppingListDetailResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ShoppingListDetailsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ShoppingListDetailResponse>> GetById(
+    public async Task<ActionResult<ShoppingListDetailsResponse>> GetById(
         Guid id,
         CancellationToken cancellationToken)
     {
@@ -60,34 +62,17 @@ public sealed class ShoppingListsController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPost("{id:guid}/items")]
-    [ProducesResponseType(typeof(ShoppingListItemResponse), StatusCodes.Status201Created)]
+    /// <summary>Atualiza o nome de uma lista de compras.</summary>
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(ShoppingListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ShoppingListItemResponse>> AddItem(
+    public async Task<ActionResult<ShoppingListResponse>> Update(
         Guid id,
-        CreateShoppingListItemRequest request,
+        [FromBody] UpdateShoppingListRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _shoppingListService.AddItemAsync(id, request, cancellationToken);
-
-        if (!result.Succeeded)
-        {
-            return ToErrorResult(result);
-        }
-
-        return CreatedAtAction(nameof(GetById), new { id }, result.Value);
-    }
-
-    [HttpPatch("{id:guid}/items/{itemId:guid}/complete")]
-    [ProducesResponseType(typeof(ShoppingListItemResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ShoppingListItemResponse>> CompleteItem(
-        Guid id,
-        Guid itemId,
-        CancellationToken cancellationToken)
-    {
-        var result = await _shoppingListService.CompleteItemAsync(id, itemId, cancellationToken);
+        var result = await _shoppingListService.UpdateAsync(id, request, cancellationToken);
 
         if (!result.Succeeded)
         {
@@ -97,30 +82,13 @@ public sealed class ShoppingListsController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPatch("{id:guid}/items/{itemId:guid}/uncomplete")]
-    [ProducesResponseType(typeof(ShoppingListItemResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ShoppingListItemResponse>> UncompleteItem(
-        Guid id,
-        Guid itemId,
-        CancellationToken cancellationToken)
-    {
-        var result = await _shoppingListService.UncompleteItemAsync(id, itemId, cancellationToken);
-
-        if (!result.Succeeded)
-        {
-            return ToErrorResult(result);
-        }
-
-        return Ok(result.Value);
-    }
-
-    [HttpDelete("{id:guid}/items/{itemId:guid}")]
+    /// <summary>Exclui uma lista de compras e seus itens.</summary>
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteItem(Guid id, Guid itemId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _shoppingListService.DeleteItemAsync(id, itemId, cancellationToken);
+        var result = await _shoppingListService.DeleteAsync(id, cancellationToken);
 
         if (!result.Succeeded)
         {
@@ -128,25 +96,5 @@ public sealed class ShoppingListsController : ControllerBase
         }
 
         return NoContent();
-    }
-
-    private ActionResult ToErrorResult<T>(AppResult<T> result)
-    {
-        return result.ErrorType switch
-        {
-            AppErrorType.Validation => BadRequest(new { message = result.Error }),
-            AppErrorType.NotFound => NotFound(new { message = result.Error }),
-            _ => StatusCode(StatusCodes.Status500InternalServerError, new { message = "Unexpected error." })
-        };
-    }
-
-    private ActionResult ToErrorResult(AppResult result)
-    {
-        return result.ErrorType switch
-        {
-            AppErrorType.Validation => BadRequest(new { message = result.Error }),
-            AppErrorType.NotFound => NotFound(new { message = result.Error }),
-            _ => StatusCode(StatusCodes.Status500InternalServerError, new { message = "Unexpected error." })
-        };
     }
 }

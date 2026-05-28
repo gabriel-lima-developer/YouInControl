@@ -42,6 +42,11 @@ public sealed class ShoppingListRepository : IShoppingListRepository
         return await query.SingleOrDefaultAsync(shoppingList => shoppingList.Id == id, cancellationToken);
     }
 
+    public void Delete(ShoppingList shoppingList)
+    {
+        _dbContext.ShoppingLists.Remove(shoppingList);
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _dbContext.SaveChangesAsync(cancellationToken);

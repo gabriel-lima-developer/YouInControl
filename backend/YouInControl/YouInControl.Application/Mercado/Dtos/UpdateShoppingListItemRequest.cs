@@ -1,5 +1,5 @@
 namespace YouInControl.Application.Mercado.Dtos;
 
-public sealed record CreateShoppingListItemRequest(
+public sealed record UpdateShoppingListItemRequest(
     string Description,
     decimal Quantity);

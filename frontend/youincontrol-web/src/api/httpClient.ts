@@ -19,7 +19,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   if (!response.ok) {
     const errorBody = (await response.json().catch(() => null)) as ApiErrorResponse | null;
-    throw new ApiRequestError(errorBody?.message ?? `Erro HTTP ${response.status}`, response.status);
+    const fallbackMessage = `Erro HTTP ${response.status}`;
+    const message = errorBody?.traceId
+      ? `${errorBody.message ?? fallbackMessage} TraceId: ${errorBody.traceId}`
+      : errorBody?.message ?? fallbackMessage;
+
+    throw new ApiRequestError(message, response.status, errorBody?.traceId, errorBody?.detail);
   }
 
   if (response.status === 204) {

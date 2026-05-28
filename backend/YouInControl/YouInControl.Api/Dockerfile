@@ -1,9 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
+
 COPY ["YouInControl.Api/YouInControl.Api.csproj", "YouInControl.Api/"]
 COPY ["YouInControl.Application/YouInControl.Application.csproj", "YouInControl.Application/"]
 COPY ["YouInControl.Domain/YouInControl.Domain.csproj", "YouInControl.Domain/"]

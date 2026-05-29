@@ -56,12 +56,12 @@ npm run dev
 ```
 
 - Frontend: `http://localhost:5173`
-- BFF local padrao: `http://localhost:5080`
+- BFF local padrao: `http://localhost:8080`
 
 Configure a URL do BFF com `VITE_API_BASE_URL`. Use `frontend/youincontrol-web/.env.example` como referencia:
 
 ```env
-VITE_API_BASE_URL=http://localhost:5080
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
 Build do frontend:
@@ -72,6 +72,30 @@ npm run build
 ```
 
 O frontend ainda nao possui scripts de lint ou testes automatizados no `package.json`.
+
+### Publicacao do frontend no Azure Static Web Apps
+
+O projeto esta preparado para o Azure Static Web Apps com fallback SPA em `frontend/youincontrol-web/public/staticwebapp.config.json`.
+
+Na criacao do Static Web App, use:
+
+- App location: `frontend/youincontrol-web`
+- Output location: `dist`
+
+Configure `VITE_API_BASE_URL` no ambiente de build do Azure Static Web Apps:
+
+```env
+VITE_API_BASE_URL=https://youincontrol-bff.agreeabledesert-d911b356.eastus.azurecontainerapps.io
+```
+
+Apos publicar o Static Web App, adicione a URL final no CORS do BFF via configuracao do Azure Container App:
+
+```env
+Cors__AllowedOrigins__0=http://localhost:5173
+Cors__AllowedOrigins__1=https://URL_DO_STATIC_WEB_APP
+```
+
+Nao crie workflow manualmente se o Azure gerar o arquivo de GitHub Actions na criacao do recurso.
 
 ## Como rodar com Docker
 

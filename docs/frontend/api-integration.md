@@ -5,7 +5,7 @@
 O frontend usa `VITE_API_BASE_URL` para apontar para o BFF:
 
 ```env
-VITE_API_BASE_URL=http://localhost:5080
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
 O valor e lido em `src/api/config.ts`. URLs de producao nao devem ser hardcoded no codigo.

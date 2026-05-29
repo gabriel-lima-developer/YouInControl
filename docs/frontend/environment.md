@@ -5,7 +5,7 @@
 O frontend usa variaveis Vite, sempre com prefixo `VITE_`.
 
 ```env
-VITE_API_BASE_URL=http://localhost:5080
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
 ## Arquivo de exemplo
@@ -20,16 +20,20 @@ Para desenvolvimento local, crie um `.env` local com base nesse exemplo. O `.env
 
 ## Backend local
 
-Quando o BFF roda por `dotnet run`, use:
-
-```env
-VITE_API_BASE_URL=http://localhost:5080
-```
-
-Quando o BFF roda via Docker Compose expondo a API, use:
+O ambiente local padrao usa:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8080
+```
+
+Se o BFF estiver rodando por outro perfil local, ajuste o valor no `.env` local sem versionar esse arquivo.
+
+## Azure Static Web Apps
+
+Na publicacao do frontend, configure `VITE_API_BASE_URL` no ambiente de build do Azure Static Web Apps:
+
+```env
+VITE_API_BASE_URL=https://youincontrol-bff.agreeabledesert-d911b356.eastus.azurecontainerapps.io
 ```
 
 ## Producao

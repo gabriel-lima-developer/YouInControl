@@ -104,12 +104,12 @@ try
 
     app.UseSerilogRequestLogging();
 
-    if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
-    {
-        using var scope = app.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<YouInControlDbContext>();
-        await dbContext.Database.MigrateAsync();
-    }
+    // if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
+    // {
+    //     using var scope = app.Services.CreateScope();
+    //     var dbContext = scope.ServiceProvider.GetRequiredService<YouInControlDbContext>();
+    //     await dbContext.Database.MigrateAsync();
+    // }
 
     app.UseSwagger();
     app.UseSwaggerUI();

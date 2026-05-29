@@ -116,6 +116,12 @@ try
 
     app.UseCors(FrontendCorsPolicy);
 
+    app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }))
+        .WithName("GetHealth")
+        .WithTags("Health")
+        .WithSummary("Checks whether the BFF process is running.")
+        .Produces(StatusCodes.Status200OK);
+
     app.MapControllers();
 
     await app.RunAsync();

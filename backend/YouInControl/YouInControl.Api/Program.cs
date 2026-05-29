@@ -11,14 +11,12 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-try
-{
+try {
     var builder = WebApplication.CreateBuilder(args);
 
     const string FrontendCorsPolicy = "Frontend";
 
-    builder.Host.UseSerilog((context, services, configuration) =>
-    {
+    builder.Host.UseSerilog((context, services, configuration) => {
         var logFilePath = Path.Combine(context.HostingEnvironment.ContentRootPath, "logs", "youincontrol-.log");
 
         configuration
@@ -36,27 +34,22 @@ try
 
     builder.Services
         .AddControllers()
-        .AddJsonOptions(options =>
-        {
+        .AddJsonOptions(options => {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(options =>
-    {
+    builder.Services.AddSwaggerGen(options => {
         var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFileName);
 
-        if (File.Exists(xmlFilePath))
-        {
+        if (File.Exists(xmlFilePath)) {
             options.IncludeXmlComments(xmlFilePath);
         }
     });
 
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy(FrontendCorsPolicy, policy =>
-        {
+    builder.Services.AddCors(options => {
+        options.AddPolicy(FrontendCorsPolicy, policy => {
             policy
                 .WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
@@ -69,16 +62,13 @@ try
 
     var app = builder.Build();
 
-    app.UseExceptionHandler(errorApp =>
-    {
-        errorApp.Run(async context =>
-        {
+    app.UseExceptionHandler(errorApp => {
+        errorApp.Run(async context => {
             var exceptionFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
             var exception = exceptionFeature?.Error;
             var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
 
-            if (exception is not null)
-            {
+            if (exception is not null) {
                 var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
                 logger.LogError(
                     exception,
@@ -91,8 +81,7 @@ try
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
-            var response = new
-            {
+            var response = new {
                 message = "Erro inesperado no servidor.",
                 traceId,
                 detail = app.Environment.IsDevelopment() ? exception?.ToString() : null
@@ -133,18 +122,13 @@ try
     app.MapControllers();
 
     await app.RunAsync();
-}
-catch (Exception ex)
-{
-    if (ex.GetType().Name == "HostAbortedException")
-    {
+} catch (Exception ex) {
+    if (ex.GetType().Name == "HostAbortedException") {
         return;
     }
 
     Log.Fatal(ex, "Application terminated unexpectedly.");
     Environment.ExitCode = 1;
-}
-finally
-{
+} finally {
     await Log.CloseAndFlushAsync();
 }

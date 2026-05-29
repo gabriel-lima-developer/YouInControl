@@ -1,35 +1,29 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace YouInControl.Infrastructure.Persistence.Migrations
-{
+namespace YouInControl.Infrastructure.Persistence.Migrations {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
-    {
+    public partial class InitialCreate : Migration {
         /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+        protected override void Up(MigrationBuilder migrationBuilder) {
             migrationBuilder.CreateTable(
                 name: "shopping_lists",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     status = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_shopping_lists", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "shopping_list_items",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     shopping_list_id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
@@ -40,8 +34,7 @@ namespace YouInControl.Infrastructure.Persistence.Migrations
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     completed_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_shopping_list_items", x => x.id);
                     table.ForeignKey(
                         name: "FK_shopping_list_items_shopping_lists_shopping_list_id",
@@ -58,8 +51,7 @@ namespace YouInControl.Infrastructure.Persistence.Migrations
         }
 
         /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+        protected override void Down(MigrationBuilder migrationBuilder) {
             migrationBuilder.DropTable(
                 name: "shopping_list_items");
 

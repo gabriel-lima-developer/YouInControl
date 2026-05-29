@@ -6,12 +6,10 @@ namespace YouInControl.Api.Controllers;
 
 [ApiController]
 [Route("api/shopping-lists/{shoppingListId:guid}/items")]
-public sealed class ShoppingListItemsController : ApiControllerBase
-{
+public sealed class ShoppingListItemsController : ApiControllerBase {
     private readonly IShoppingListService _shoppingListService;
 
-    public ShoppingListItemsController(IShoppingListService shoppingListService)
-    {
+    public ShoppingListItemsController(IShoppingListService shoppingListService) {
         _shoppingListService = shoppingListService;
     }
 
@@ -21,12 +19,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyCollection<ShoppingListItemResponse>>> GetAll(
         Guid shoppingListId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.GetItemsAsync(shoppingListId, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -40,12 +36,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
     public async Task<ActionResult<ShoppingListItemResponse>> GetById(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.GetItemByIdAsync(shoppingListId, itemId, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -60,12 +54,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
     public async Task<ActionResult<ShoppingListItemResponse>> Create(
         Guid shoppingListId,
         [FromBody] CreateShoppingListItemRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.AddItemAsync(shoppingListId, request, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -84,12 +76,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
         Guid shoppingListId,
         Guid itemId,
         [FromBody] UpdateShoppingListItemRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.UpdateItemAsync(shoppingListId, itemId, request, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -103,12 +93,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
     public async Task<IActionResult> Delete(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.DeleteItemAsync(shoppingListId, itemId, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -122,12 +110,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
     public async Task<ActionResult<ShoppingListItemResponse>> Complete(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.CompleteItemAsync(shoppingListId, itemId, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -141,12 +127,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
     public async Task<ActionResult<ShoppingListItemResponse>> Uncomplete(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.UncompleteItemAsync(shoppingListId, itemId, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -161,12 +145,10 @@ public sealed class ShoppingListItemsController : ApiControllerBase
     public async Task<ActionResult<IReadOnlyCollection<ShoppingListItemResponse>>> Reorder(
         Guid shoppingListId,
         [FromBody] ReorderShoppingListItemsRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.ReorderItemsAsync(shoppingListId, request, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 

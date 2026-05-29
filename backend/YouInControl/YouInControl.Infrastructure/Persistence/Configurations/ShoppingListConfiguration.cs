@@ -4,10 +4,8 @@ using YouInControl.Domain.Mercado;
 
 namespace YouInControl.Infrastructure.Persistence.Configurations;
 
-internal sealed class ShoppingListConfiguration : IEntityTypeConfiguration<ShoppingList>
-{
-    public void Configure(EntityTypeBuilder<ShoppingList> builder)
-    {
+internal sealed class ShoppingListConfiguration : IEntityTypeConfiguration<ShoppingList> {
+    public void Configure(EntityTypeBuilder<ShoppingList> builder) {
         builder.ToTable("shopping_lists");
 
         builder.HasKey(shoppingList => shoppingList.Id);

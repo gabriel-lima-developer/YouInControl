@@ -1,15 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace YouInControl.Infrastructure.Persistence.Migrations
-{
+namespace YouInControl.Infrastructure.Persistence.Migrations {
     /// <inheritdoc />
-    public partial class UpdateShoppingListItemPilotContract : Migration
-    {
+    public partial class UpdateShoppingListItemPilotContract : Migration {
         /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+        protected override void Up(MigrationBuilder migrationBuilder) {
             migrationBuilder.DropColumn(
                 name: "unit",
                 table: "shopping_list_items");
@@ -61,8 +58,7 @@ namespace YouInControl.Infrastructure.Persistence.Migrations
         }
 
         /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+        protected override void Down(MigrationBuilder migrationBuilder) {
             migrationBuilder.DropColumn(
                 name: "order",
                 table: "shopping_list_items");

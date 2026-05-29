@@ -3,8 +3,7 @@ using YouInControl.Application.Mercado.Dtos;
 
 namespace YouInControl.Application.Mercado.Services;
 
-public interface IShoppingListService
-{
+public interface IShoppingListService {
     Task<AppResult<ShoppingListResponse>> CreateAsync(
         CreateShoppingListRequest request,
         CancellationToken cancellationToken);

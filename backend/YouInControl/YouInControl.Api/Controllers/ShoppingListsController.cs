@@ -6,12 +6,10 @@ namespace YouInControl.Api.Controllers;
 
 [ApiController]
 [Route("api/shopping-lists")]
-public sealed class ShoppingListsController : ApiControllerBase
-{
+public sealed class ShoppingListsController : ApiControllerBase {
     private readonly IShoppingListService _shoppingListService;
 
-    public ShoppingListsController(IShoppingListService shoppingListService)
-    {
+    public ShoppingListsController(IShoppingListService shoppingListService) {
         _shoppingListService = shoppingListService;
     }
 
@@ -21,12 +19,10 @@ public sealed class ShoppingListsController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ShoppingListResponse>> Create(
         [FromBody] CreateShoppingListRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.CreateAsync(request, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -37,8 +33,7 @@ public sealed class ShoppingListsController : ApiControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyCollection<ShoppingListResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<ShoppingListResponse>>> GetAll(
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingLists = await _shoppingListService.GetAllAsync(cancellationToken);
 
         return Ok(shoppingLists);
@@ -50,12 +45,10 @@ public sealed class ShoppingListsController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ShoppingListDetailsResponse>> GetById(
         Guid id,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.GetByIdAsync(id, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -70,12 +63,10 @@ public sealed class ShoppingListsController : ApiControllerBase
     public async Task<ActionResult<ShoppingListResponse>> Update(
         Guid id,
         [FromBody] UpdateShoppingListRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var result = await _shoppingListService.UpdateAsync(id, request, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 
@@ -86,12 +77,10 @@ public sealed class ShoppingListsController : ApiControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
-    {
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken) {
         var result = await _shoppingListService.DeleteAsync(id, cancellationToken);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return ToErrorResult(result);
         }
 

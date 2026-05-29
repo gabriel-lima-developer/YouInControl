@@ -7,8 +7,7 @@ using YouInControl.Domain.Mercado;
 
 namespace YouInControl.Application.Mercado.Services;
 
-public sealed class ShoppingListService : IShoppingListService
-{
+public sealed class ShoppingListService : IShoppingListService {
     private const string ListNotFoundMessage = "Shopping list was not found.";
     private const string ItemNotFoundInListMessage = "Shopping list item was not found in the informed list.";
 
@@ -17,33 +16,27 @@ public sealed class ShoppingListService : IShoppingListService
 
     public ShoppingListService(
         IShoppingListRepository repository,
-        ILogger<ShoppingListService> logger)
-    {
+        ILogger<ShoppingListService> logger) {
         _repository = repository;
         _logger = logger;
     }
 
     public async Task<AppResult<ShoppingListResponse>> CreateAsync(
         CreateShoppingListRequest request,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
+        CancellationToken cancellationToken) {
+        try {
             var shoppingList = new ShoppingList(request.Name);
 
             await _repository.AddAsync(shoppingList, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
 
             return AppResult<ShoppingListResponse>.Success(ToResponse(shoppingList));
-        }
-        catch (DomainException ex)
-        {
+        } catch (DomainException ex) {
             return AppResult<ShoppingListResponse>.Validation(ex.Message);
         }
     }
 
-    public async Task<IReadOnlyCollection<ShoppingListResponse>> GetAllAsync(CancellationToken cancellationToken)
-    {
+    public async Task<IReadOnlyCollection<ShoppingListResponse>> GetAllAsync(CancellationToken cancellationToken) {
         var shoppingLists = await _repository.GetAllAsync(cancellationToken);
 
         return shoppingLists
@@ -53,12 +46,10 @@ public sealed class ShoppingListService : IShoppingListService
 
     public async Task<AppResult<ShoppingListDetailsResponse>> GetByIdAsync(
         Guid id,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(id, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<ShoppingListDetailsResponse>.NotFound(ListNotFoundMessage);
         }
 
@@ -68,34 +59,27 @@ public sealed class ShoppingListService : IShoppingListService
     public async Task<AppResult<ShoppingListResponse>> UpdateAsync(
         Guid id,
         UpdateShoppingListRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(id, includeItems: false, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<ShoppingListResponse>.NotFound(ListNotFoundMessage);
         }
 
-        try
-        {
+        try {
             shoppingList.Update(request.Name);
             await _repository.SaveChangesAsync(cancellationToken);
 
             return AppResult<ShoppingListResponse>.Success(ToResponse(shoppingList));
-        }
-        catch (DomainException ex)
-        {
+        } catch (DomainException ex) {
             return AppResult<ShoppingListResponse>.Validation(ex.Message);
         }
     }
 
-    public async Task<AppResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
-    {
+    public async Task<AppResult> DeleteAsync(Guid id, CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(id, includeItems: false, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult.NotFound(ListNotFoundMessage);
         }
 
@@ -107,12 +91,10 @@ public sealed class ShoppingListService : IShoppingListService
 
     public async Task<AppResult<IReadOnlyCollection<ShoppingListItemResponse>>> GetItemsAsync(
         Guid shoppingListId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<IReadOnlyCollection<ShoppingListItemResponse>>.NotFound(ListNotFoundMessage);
         }
 
@@ -122,19 +104,16 @@ public sealed class ShoppingListService : IShoppingListService
     public async Task<AppResult<ShoppingListItemResponse>> GetItemByIdAsync(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<ShoppingListItemResponse>.NotFound(ListNotFoundMessage);
         }
 
         var item = shoppingList.Items.SingleOrDefault(item => item.Id == itemId);
 
-        if (item is null)
-        {
+        if (item is null) {
             return AppResult<ShoppingListItemResponse>.NotFound(ItemNotFoundInListMessage);
         }
 
@@ -144,8 +123,7 @@ public sealed class ShoppingListService : IShoppingListService
     public async Task<AppResult<ShoppingListItemResponse>> AddItemAsync(
         Guid shoppingListId,
         CreateShoppingListItemRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         _logger.LogInformation(
             "Adding shopping list item. ShoppingListId: {ShoppingListId}, Description: {Description}, Quantity: {Quantity}",
             shoppingListId,
@@ -154,21 +132,17 @@ public sealed class ShoppingListService : IShoppingListService
 
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<ShoppingListItemResponse>.NotFound(ListNotFoundMessage);
         }
 
-        try
-        {
+        try {
             var item = shoppingList.AddItem(request.Description, request.Quantity);
 
             await _repository.SaveChangesAsync(cancellationToken);
 
             return AppResult<ShoppingListItemResponse>.Success(ToItemResponse(item));
-        }
-        catch (DomainException ex)
-        {
+        } catch (DomainException ex) {
             return AppResult<ShoppingListItemResponse>.Validation(ex.Message);
         }
     }
@@ -177,29 +151,23 @@ public sealed class ShoppingListService : IShoppingListService
         Guid shoppingListId,
         Guid itemId,
         UpdateShoppingListItemRequest request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<ShoppingListItemResponse>.NotFound(ListNotFoundMessage);
         }
 
-        if (!shoppingList.Items.Any(item => item.Id == itemId))
-        {
+        if (!shoppingList.Items.Any(item => item.Id == itemId)) {
             return AppResult<ShoppingListItemResponse>.NotFound(ItemNotFoundInListMessage);
         }
 
-        try
-        {
+        try {
             var item = shoppingList.UpdateItem(itemId, request.Description, request.Quantity);
             await _repository.SaveChangesAsync(cancellationToken);
 
             return AppResult<ShoppingListItemResponse>.Success(ToItemResponse(item));
-        }
-        catch (DomainException ex)
-        {
+        } catch (DomainException ex) {
             return AppResult<ShoppingListItemResponse>.Validation(ex.Message);
         }
     }
@@ -207,8 +175,7 @@ public sealed class ShoppingListService : IShoppingListService
     public async Task<AppResult<ShoppingListItemResponse>> CompleteItemAsync(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         return await ChangeItemCompletionAsync(
             shoppingListId,
             itemId,
@@ -219,8 +186,7 @@ public sealed class ShoppingListService : IShoppingListService
     public async Task<AppResult<ShoppingListItemResponse>> UncompleteItemAsync(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         return await ChangeItemCompletionAsync(
             shoppingListId,
             itemId,
@@ -231,17 +197,14 @@ public sealed class ShoppingListService : IShoppingListService
     public async Task<AppResult> DeleteItemAsync(
         Guid shoppingListId,
         Guid itemId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult.NotFound(ListNotFoundMessage);
         }
 
-        if (!shoppingList.Items.Any(item => item.Id == itemId))
-        {
+        if (!shoppingList.Items.Any(item => item.Id == itemId)) {
             return AppResult.NotFound(ItemNotFoundInListMessage);
         }
 
@@ -254,23 +217,19 @@ public sealed class ShoppingListService : IShoppingListService
     public async Task<AppResult<IReadOnlyCollection<ShoppingListItemResponse>>> ReorderItemsAsync(
         Guid shoppingListId,
         ReorderShoppingListItemsRequest request,
-        CancellationToken cancellationToken)
-    {
-        if (request.Items is null)
-        {
+        CancellationToken cancellationToken) {
+        if (request.Items is null) {
             return AppResult<IReadOnlyCollection<ShoppingListItemResponse>>.Validation(
                 "Shopping list item reorder request is required.");
         }
 
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<IReadOnlyCollection<ShoppingListItemResponse>>.NotFound(ListNotFoundMessage);
         }
 
-        try
-        {
+        try {
             shoppingList.ReorderItems(
                 request.Items
                     .Select(item => (item.ItemId, item.Order))
@@ -279,9 +238,7 @@ public sealed class ShoppingListService : IShoppingListService
             await _repository.SaveChangesAsync(cancellationToken);
 
             return AppResult<IReadOnlyCollection<ShoppingListItemResponse>>.Success(ToItemResponses(shoppingList));
-        }
-        catch (DomainException ex)
-        {
+        } catch (DomainException ex) {
             return AppResult<IReadOnlyCollection<ShoppingListItemResponse>>.Validation(ex.Message);
         }
     }
@@ -290,17 +247,14 @@ public sealed class ShoppingListService : IShoppingListService
         Guid shoppingListId,
         Guid itemId,
         bool complete,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
-        if (shoppingList is null)
-        {
+        if (shoppingList is null) {
             return AppResult<ShoppingListItemResponse>.NotFound(ListNotFoundMessage);
         }
 
-        if (!shoppingList.Items.Any(item => item.Id == itemId))
-        {
+        if (!shoppingList.Items.Any(item => item.Id == itemId)) {
             return AppResult<ShoppingListItemResponse>.NotFound(ItemNotFoundInListMessage);
         }
 
@@ -313,8 +267,7 @@ public sealed class ShoppingListService : IShoppingListService
         return AppResult<ShoppingListItemResponse>.Success(ToItemResponse(item));
     }
 
-    private static ShoppingListResponse ToResponse(ShoppingList shoppingList)
-    {
+    private static ShoppingListResponse ToResponse(ShoppingList shoppingList) {
         return new ShoppingListResponse(
             shoppingList.Id,
             shoppingList.Title,
@@ -323,8 +276,7 @@ public sealed class ShoppingListService : IShoppingListService
             shoppingList.UpdatedAt);
     }
 
-    private static ShoppingListDetailsResponse ToDetailsResponse(ShoppingList shoppingList)
-    {
+    private static ShoppingListDetailsResponse ToDetailsResponse(ShoppingList shoppingList) {
         return new ShoppingListDetailsResponse(
             shoppingList.Id,
             shoppingList.Title,
@@ -334,8 +286,7 @@ public sealed class ShoppingListService : IShoppingListService
             ToItemResponses(shoppingList));
     }
 
-    private static IReadOnlyCollection<ShoppingListItemResponse> ToItemResponses(ShoppingList shoppingList)
-    {
+    private static IReadOnlyCollection<ShoppingListItemResponse> ToItemResponses(ShoppingList shoppingList) {
         return shoppingList.Items
             .OrderBy(item => item.Order)
             .ThenBy(item => item.CreatedAt)
@@ -343,8 +294,7 @@ public sealed class ShoppingListService : IShoppingListService
             .ToList();
     }
 
-    private static ShoppingListItemResponse ToItemResponse(ShoppingListItem item)
-    {
+    private static ShoppingListItemResponse ToItemResponse(ShoppingListItem item) {
         return new ShoppingListItemResponse(
             item.Id,
             item.ShoppingListId,

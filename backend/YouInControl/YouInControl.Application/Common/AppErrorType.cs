@@ -1,7 +1,6 @@
 namespace YouInControl.Application.Common;
 
-public enum AppErrorType
-{
+public enum AppErrorType {
     None = 0,
     Validation = 1,
     NotFound = 2

@@ -104,12 +104,20 @@ try
 
     app.UseSerilogRequestLogging();
 
-    // if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
-    // {
-    //     using var scope = app.Services.CreateScope();
-    //     var dbContext = scope.ServiceProvider.GetRequiredService<YouInControlDbContext>();
-    //     await dbContext.Database.MigrateAsync();
-    // }
+    if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup")) {
+
+        var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrWhiteSpace(connectionString)) {
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("Database migration skipped because DefaultConnection is not configured.");
+        } else {
+            using var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<YouInControlDbContext>();
+
+            await dbContext.Database.MigrateAsync();
+        }
+    }
 
     app.UseSwagger();
     app.UseSwaggerUI();

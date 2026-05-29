@@ -34,7 +34,7 @@ jobs:
           docker build \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest \
-            -f backend/YouInControl/Dockerfile \
+            -f backend/YouInControl/YouInControl.Api/Dockerfile \
             backend/YouInControl
 
       - name: Push Docker image

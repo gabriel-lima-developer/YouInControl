@@ -9,6 +9,7 @@ export function AppRoutes() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<Navigate replace to="/shopping-lists" />} />
+        <Route path="lists" element={<Navigate replace to="/shopping-lists" />} />
         <Route path="shopping-lists" element={<ShoppingListsPage />} />
         <Route path="shopping-lists/:id" element={<ShoppingListDetailsPage />} />
         <Route path="lists/:id" element={<LegacyShoppingListRedirect />} />

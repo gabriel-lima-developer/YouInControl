@@ -1,5 +1,7 @@
 export type ShoppingListStatus = 'Active' | 'Completed' | 'Archived';
 
+export type ShoppingListItemUnitOfMeasure = 'Unit' | 'Kg' | 'Liter' | 'Package';
+
 export type ShoppingList = {
   id: string;
   name: string;
@@ -12,7 +14,8 @@ export type ShoppingListItem = {
   id: string;
   shoppingListId: string;
   description: string;
-  quantity: number;
+  quantity: number | null;
+  unitOfMeasure: ShoppingListItemUnitOfMeasure | null;
   order: number;
   isCompleted: boolean;
   createdAt: string;
@@ -34,12 +37,14 @@ export type UpdateShoppingListRequest = {
 
 export type CreateShoppingListItemRequest = {
   description: string;
-  quantity: number;
+  quantity?: number;
+  unitOfMeasure?: ShoppingListItemUnitOfMeasure;
 };
 
 export type UpdateShoppingListItemRequest = {
   description: string;
-  quantity: number;
+  quantity?: number;
+  unitOfMeasure?: ShoppingListItemUnitOfMeasure;
 };
 
 export type ReorderShoppingListItemsRequest = {

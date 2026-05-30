@@ -42,7 +42,7 @@ export function QuickCreateForm({ disabled = false, placeholder, onSubmit }: Qui
       <button
         type="submit"
         disabled={disabled || !value.trim()}
-        className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
         aria-label="Adicionar"
       >
         <Plus className="h-5 w-5" aria-hidden="true" />

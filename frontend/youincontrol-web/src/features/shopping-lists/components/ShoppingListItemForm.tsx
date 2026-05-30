@@ -1,35 +1,18 @@
-import { Plus, Save } from 'lucide-react';
-import { useEffect, useState, type FormEvent } from 'react';
-import { Button } from '../../../components/Button';
-import { TextField } from '../../../components/TextField';
-import type { CreateShoppingListItemRequest } from '../types/shoppingListTypes';
+import { Plus } from 'lucide-react';
+import { useState, type FormEvent } from 'react';
+import type { CreateShoppingListItemRequest, ShoppingListItemUnitOfMeasure } from '../types/shoppingListTypes';
+import { parseOptionalQuantity, unitOfMeasureOptions } from '../utils/unitOfMeasure';
 
 type ShoppingListItemFormProps = {
   disabled?: boolean;
-  initialDescription?: string;
-  initialQuantity?: number;
-  submitLabel?: string;
-  onCancel?: () => void;
   onSubmit: (payload: CreateShoppingListItemRequest) => Promise<void> | void;
 };
 
-export function ShoppingListItemForm({
-  disabled = false,
-  initialDescription = '',
-  initialQuantity,
-  submitLabel = 'Adicionar',
-  onCancel,
-  onSubmit,
-}: ShoppingListItemFormProps) {
-  const [description, setDescription] = useState(initialDescription);
-  const [quantity, setQuantity] = useState(initialQuantity?.toString() ?? '');
+export function ShoppingListItemForm({ disabled = false, onSubmit }: ShoppingListItemFormProps) {
+  const [description, setDescription] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [unitOfMeasure, setUnitOfMeasure] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
-  const isEditing = Boolean(initialDescription);
-
-  useEffect(() => {
-    setDescription(initialDescription);
-    setQuantity(initialQuantity?.toString() ?? '');
-  }, [initialDescription, initialQuantity]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,13 +23,8 @@ export function ShoppingListItemForm({
       return;
     }
 
-    if (!quantity.trim()) {
-      setValidationError('Informe a quantidade.');
-      return;
-    }
-
-    const parsedQuantity = Number(quantity);
-    if (!Number.isFinite(parsedQuantity) || parsedQuantity <= 0) {
+    const parsedQuantity = parseOptionalQuantity(quantity);
+    if (parsedQuantity === null) {
       setValidationError('Quantidade precisa ser maior que zero.');
       return;
     }
@@ -55,12 +33,12 @@ export function ShoppingListItemForm({
     try {
       await onSubmit({
         description: normalizedDescription,
-        quantity: parsedQuantity,
+        ...(parsedQuantity === undefined ? {} : { quantity: parsedQuantity }),
+        ...(unitOfMeasure ? { unitOfMeasure: unitOfMeasure as ShoppingListItemUnitOfMeasure } : {}),
       });
-      if (!isEditing) {
-        setDescription('');
-        setQuantity('');
-      }
+      setDescription('');
+      setQuantity('');
+      setUnitOfMeasure('');
     } catch {
       return;
     }
@@ -68,42 +46,59 @@ export function ShoppingListItemForm({
 
   return (
     <form
-      className="grid gap-3 rounded-lg border border-stone-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_160px_auto] md:items-end"
+      className="flex items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3"
       onSubmit={handleSubmit}
+      role="form"
+      aria-label="Adicionar novo item"
     >
-      <TextField
-        disabled={disabled}
-        label="Item"
-        maxLength={200}
-        name={isEditing ? 'edit-item-description' : 'new-item-description'}
-        onChange={(event) => setDescription(event.target.value)}
-        placeholder="Arroz"
-        value={description}
-      />
-      <TextField
-        disabled={disabled}
-        inputMode="decimal"
-        label="Quantidade"
-        min="0.01"
-        name={isEditing ? 'edit-item-quantity' : 'new-item-quantity'}
-        onChange={(event) => setQuantity(event.target.value)}
-        placeholder="2"
-        step="0.01"
-        type="number"
-        value={quantity}
-      />
-      <div className="flex flex-wrap gap-2">
-        <Button disabled={disabled} type="submit">
-          {isEditing ? <Save className="h-4 w-4" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
-          {submitLabel}
-        </Button>
-        {onCancel ? (
-          <Button disabled={disabled} onClick={onCancel} type="button" variant="secondary">
-            Cancelar
-          </Button>
-        ) : null}
+      <div className="min-w-0 flex-1">
+        <input
+          type="text"
+          disabled={disabled}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Adicionar item..."
+          className="h-9 w-full min-w-0 rounded-lg border border-input bg-secondary px-3 text-sm text-foreground transition-shadow placeholder:text-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+          aria-label="Nome do item"
+          name="new-item-description"
+          maxLength={200}
+        />
+        {validationError ? <p className="mt-2 text-xs text-destructive">{validationError}</p> : null}
       </div>
-      {validationError ? <p className="text-sm text-red-700 md:col-span-3">{validationError}</p> : null}
+      <input
+        type="text"
+        inputMode="decimal"
+        disabled={disabled}
+        value={quantity}
+        onChange={(event) => setQuantity(event.target.value)}
+        placeholder="Qtd"
+        className="h-9 w-14 flex-shrink-0 rounded-lg border border-input bg-secondary px-2 text-center text-sm text-foreground transition-shadow placeholder:text-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+        aria-label="Quantidade"
+        name="new-item-quantity"
+      />
+      <select
+        disabled={disabled}
+        value={unitOfMeasure}
+        onChange={(event) => setUnitOfMeasure(event.target.value)}
+        className="h-9 w-24 flex-shrink-0 cursor-pointer appearance-none rounded-lg border border-input bg-secondary px-2 text-sm text-foreground transition-shadow focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+        aria-label="Unidade de medida"
+        name="new-item-unit-of-measure"
+      >
+        <option value="">Unid.</option>
+        {unitOfMeasureOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <button
+        type="submit"
+        disabled={disabled || !description.trim()}
+        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+        aria-label="Adicionar item"
+      >
+        <Plus className="h-4 w-4" aria-hidden="true" />
+      </button>
     </form>
   );
 }

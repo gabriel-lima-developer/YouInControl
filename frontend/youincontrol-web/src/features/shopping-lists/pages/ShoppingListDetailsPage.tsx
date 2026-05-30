@@ -14,12 +14,16 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { ArrowLeft, PackageOpen } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, PackageOpen } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { ProgressSection } from '../../../components/ProgressSection';
-import { QuickCreateForm } from '../../../components/QuickCreateForm';
 import { RetryButton, StateView } from '../../../components/StateView';
 import { SummaryCard } from '../../../components/SummaryCard';
+import { useToast } from '../../../components/ToastProvider';
+import { formatLongDate } from '../../../utils/date';
+import { ShoppingListItemForm } from '../components/ShoppingListItemForm';
 import { ShoppingListItemRow } from '../components/ShoppingListItemRow';
 import {
   useCreateShoppingListItemMutation,
@@ -29,12 +33,13 @@ import {
   useUpdateShoppingListItemMutation,
 } from '../hooks/useShoppingListItems';
 import { useShoppingListQuery } from '../hooks/useShoppingLists';
-import type { CreateShoppingListItemRequest, ShoppingListItem } from '../types/shoppingListTypes';
-import { formatLongDate } from '../../../utils/date';
+import type { CreateShoppingListItemRequest, ShoppingListItem, UpdateShoppingListItemRequest } from '../types/shoppingListTypes';
 
 export function ShoppingListDetailsPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  const { showSuccess } = useToast();
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const shoppingListQuery = useShoppingListQuery(id);
   const createItemMutation = useCreateShoppingListItemMutation(id);
   const updateItemMutation = useUpdateShoppingListItemMutation(id);
@@ -48,22 +53,13 @@ export function ShoppingListDetailsPage() {
 
   async function handleCreateItem(payload: CreateShoppingListItemRequest) {
     await createItemMutation.mutateAsync(payload);
+    showSuccess('Item adicionado com sucesso.');
   }
 
-  async function handleQuickCreateItem(description: string) {
-    await handleCreateItem({
-      description,
-      quantity: 1,
-    });
-  }
-
-  async function handleUpdateItem(item: ShoppingListItem, description: string) {
+  async function handleUpdateItem(item: ShoppingListItem, payload: UpdateShoppingListItemRequest) {
     await updateItemMutation.mutateAsync({
       itemId: item.id,
-      payload: {
-        description,
-        quantity: item.quantity,
-      },
+      payload,
     });
   }
 
@@ -71,8 +67,15 @@ export function ShoppingListDetailsPage() {
     toggleItemMutation.mutate({ itemId: item.id, isCompleted: item.isCompleted });
   }
 
-  function handleDeleteItem(itemId: string) {
-    deleteItemMutation.mutate(itemId);
+  function handleConfirmDeleteItem() {
+    if (!deleteTarget) {
+      return;
+    }
+
+    deleteItemMutation.mutate(deleteTarget, {
+      onSuccess: () => showSuccess('Item excluido com sucesso.'),
+    });
+    setDeleteTarget(null);
   }
 
   if (shoppingListQuery.isLoading) {
@@ -102,8 +105,9 @@ export function ShoppingListDetailsPage() {
 
   const list = shoppingListQuery.data;
   const sortedItems = [...(list?.items ?? [])].sort((first, second) => first.order - second.order);
-  const completedItems = sortedItems.filter((item) => item.isCompleted).length;
-  const pendingItems = sortedItems.length - completedItems;
+  const pendingItems = sortedItems.filter((item) => !item.isCompleted);
+  const completedItems = sortedItems.filter((item) => item.isCompleted);
+  const targetItem = deleteTarget ? sortedItems.find((item) => item.id === deleteTarget) : null;
   const isAnyItemActionPending =
     createItemMutation.isPending ||
     updateItemMutation.isPending ||
@@ -117,13 +121,13 @@ export function ShoppingListDetailsPage() {
       return;
     }
 
-    const oldIndex = sortedItems.findIndex((item) => item.id === active.id);
-    const newIndex = sortedItems.findIndex((item) => item.id === over.id);
+    const oldIndex = pendingItems.findIndex((item) => item.id === active.id);
+    const newIndex = pendingItems.findIndex((item) => item.id === over.id);
     if (oldIndex < 0 || newIndex < 0) {
       return;
     }
 
-    const reorderedItems = arrayMove(sortedItems, oldIndex, newIndex);
+    const reorderedItems = [...arrayMove(pendingItems, oldIndex, newIndex), ...completedItems];
     reorderItemsMutation.mutate({
       items: reorderedItems.map((reorderedItem, index) => ({
         itemId: reorderedItem.id,
@@ -152,23 +156,19 @@ export function ShoppingListDetailsPage() {
       <section aria-label="Resumo da lista">
         <div className="grid grid-cols-3 gap-3">
           <SummaryCard label="Total" value={sortedItems.length} variant="default" />
-          <SummaryCard label="Concluidos" value={completedItems} variant="completed" />
-          <SummaryCard label="Pendentes" value={pendingItems} variant="pending" />
+          <SummaryCard label="Concluidos" value={completedItems.length} variant="completed" />
+          <SummaryCard label="Pendentes" value={pendingItems.length} variant="pending" />
         </div>
       </section>
 
       <section aria-label="Progresso da lista">
         <div className="rounded-2xl border border-border bg-card px-4 py-4">
-          <ProgressSection completed={completedItems} total={sortedItems.length} showLabel />
+          <ProgressSection completed={completedItems.length} total={sortedItems.length} showLabel />
         </div>
       </section>
 
       <section aria-label="Adicionar item">
-        <QuickCreateForm
-          disabled={createItemMutation.isPending}
-          placeholder="Adicionar novo item..."
-          onSubmit={handleQuickCreateItem}
-        />
+        <ShoppingListItemForm disabled={createItemMutation.isPending} onSubmit={handleCreateItem} />
       </section>
 
       {createItemMutation.isError ? <ErrorMessage message={createItemMutation.error.message} /> : null}
@@ -189,29 +189,77 @@ export function ShoppingListDetailsPage() {
         </div>
       ) : (
         <section aria-label="Itens da lista">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-            modifiers={[restrictToVerticalAxis]}
-          >
-            <SortableContext items={sortedItems.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-              <ul className="flex flex-col gap-2" role="list">
-                {sortedItems.map((item) => (
-                  <ShoppingListItemRow
-                    isBusy={isAnyItemActionPending}
-                    item={item}
-                    key={item.id}
-                    onDelete={handleDeleteItem}
-                    onToggle={handleToggleItem}
-                    onUpdate={handleUpdateItem}
-                  />
-                ))}
-              </ul>
-            </SortableContext>
-          </DndContext>
+          <div className="flex flex-col gap-6">
+            {pendingItems.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                    Pendentes ({pendingItems.length})
+                  </h2>
+                </div>
+
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToVerticalAxis]}
+                >
+                  <SortableContext items={pendingItems.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+                    <ul className="flex flex-col gap-2" role="list">
+                      {pendingItems.map((item) => (
+                        <ShoppingListItemRow
+                          isBusy={isAnyItemActionPending}
+                          item={item}
+                          key={item.id}
+                          onDelete={setDeleteTarget}
+                          onToggle={handleToggleItem}
+                          onUpdate={handleUpdateItem}
+                        />
+                      ))}
+                    </ul>
+                  </SortableContext>
+                </DndContext>
+              </div>
+            ) : null}
+
+            {completedItems.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">
+                    Concluidos ({completedItems.length})
+                  </h2>
+                </div>
+
+                <ul className="flex flex-col gap-2" role="list">
+                  {completedItems.map((item) => (
+                    <ShoppingListItemRow
+                      isBusy={isAnyItemActionPending}
+                      item={item}
+                      key={item.id}
+                      onDelete={setDeleteTarget}
+                      onToggle={handleToggleItem}
+                      onUpdate={handleUpdateItem}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
         </section>
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Excluir item"
+        description={`Tem certeza que deseja excluir "${targetItem?.description ?? 'este item'}"? Esta acao nao pode ser desfeita.`}
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        variant="danger"
+        onConfirm={handleConfirmDeleteItem}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </>
   );
 }

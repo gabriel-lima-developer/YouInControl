@@ -10,7 +10,7 @@ export function AppFooter() {
             href="https://github.com/gabriel-lima-developer"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-all hover:text-foreground active:scale-95"
             aria-label="GitHub de Gabriel Lima"
           >
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
@@ -23,7 +23,7 @@ export function AppFooter() {
             href="https://www.linkedin.com/in/gabriel-lima-211901193/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-all hover:text-foreground active:scale-95"
             aria-label="LinkedIn de Gabriel Lima"
           >
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

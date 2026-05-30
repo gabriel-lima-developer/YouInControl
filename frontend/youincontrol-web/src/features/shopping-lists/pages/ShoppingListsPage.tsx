@@ -1,9 +1,9 @@
 import { useQueries } from '@tanstack/react-query';
 import { ShoppingCart } from 'lucide-react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuickCreateForm } from '../../../components/QuickCreateForm';
 import { RetryButton, StateView } from '../../../components/StateView';
+import { useToast } from '../../../components/ToastProvider';
 import { ShoppingListCard } from '../components/ShoppingListCard';
 import { shoppingListKeys } from '../hooks/queryKeys';
 import {
@@ -15,8 +15,8 @@ import {
 import { getShoppingListItems } from '../services/shoppingListItemsService';
 
 export function ShoppingListsPage() {
-  const [feedback, setFeedback] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { showSuccess } = useToast();
   const shoppingListsQuery = useShoppingListsQuery();
   const createShoppingListMutation = useCreateShoppingListMutation();
   const updateShoppingListMutation = useUpdateShoppingListMutation();
@@ -32,21 +32,18 @@ export function ShoppingListsPage() {
   });
 
   async function handleCreateList(name: string) {
-    setFeedback(null);
     await createShoppingListMutation.mutateAsync({ name });
-    setFeedback('Lista criada com sucesso.');
+    showSuccess('Lista criada com sucesso.');
   }
 
   async function handleUpdateList(id: string, name: string) {
-    setFeedback(null);
     await updateShoppingListMutation.mutateAsync({ id, payload: { name } });
-    setFeedback('Lista atualizada com sucesso.');
+    showSuccess('Lista atualizada com sucesso.');
   }
 
   function handleDeleteList(id: string) {
-    setFeedback(null);
     deleteShoppingListMutation.mutate(id, {
-      onSuccess: () => setFeedback('Lista excluida com sucesso.'),
+      onSuccess: () => showSuccess('Lista excluida com sucesso.'),
     });
   }
 
@@ -78,7 +75,6 @@ export function ShoppingListsPage() {
         />
       </section>
 
-      {feedback ? <p className="rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">{feedback}</p> : null}
       {createShoppingListMutation.isError ? <ErrorMessage message={createShoppingListMutation.error.message} /> : null}
       {updateShoppingListMutation.isError ? <ErrorMessage message={updateShoppingListMutation.error.message} /> : null}
       {deleteShoppingListMutation.isError ? <ErrorMessage message={deleteShoppingListMutation.error.message} /> : null}

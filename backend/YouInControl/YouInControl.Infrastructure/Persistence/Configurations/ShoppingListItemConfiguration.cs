@@ -25,8 +25,12 @@ internal sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<S
 
         builder.Property(item => item.Quantity)
             .HasColumnName("quantity")
-            .HasColumnType("numeric(18,2)")
-            .IsRequired();
+            .HasColumnType("numeric(18,2)");
+
+        builder.Property(item => item.UnitOfMeasure)
+            .HasColumnName("unit_of_measure")
+            .HasConversion<string>()
+            .HasMaxLength(30);
 
         builder.Property(item => item.Order)
             .HasColumnName("order")

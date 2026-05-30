@@ -1,5 +1,8 @@
+using YouInControl.Domain.Mercado;
+
 namespace YouInControl.Application.Mercado.Dtos;
 
 public sealed record UpdateShoppingListItemRequest(
     string Description,
-    decimal Quantity);
+    decimal? Quantity,
+    ShoppingListItemUnitOfMeasure? UnitOfMeasure);

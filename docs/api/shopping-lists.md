@@ -52,7 +52,8 @@ Response `200`:
       "id": "22222222-2222-2222-2222-222222222222",
       "shoppingListId": "11111111-1111-1111-1111-111111111111",
       "description": "Arroz",
-      "quantity": 2,
+      "quantity": 1,
+      "unitOfMeasure": "Package",
       "order": 1,
       "isCompleted": false,
       "createdAt": "2026-05-28T12:05:00Z",
@@ -117,10 +118,11 @@ Campos funcionais do item:
 
 - `description`
 - `quantity`
+- `unitOfMeasure`
 - `order`
 - `isCompleted`
 
-Nao fazem parte do piloto: preco, categoria, unidade de medida e observacao.
+Nao fazem parte do piloto: preco, categoria e observacao.
 
 ### GET `/api/shopping-lists/{shoppingListId}/items`
 
@@ -149,7 +151,8 @@ Request:
 ```json
 {
   "description": "Arroz",
-  "quantity": 2
+  "quantity": 1,
+  "unitOfMeasure": "Package"
 }
 ```
 
@@ -160,8 +163,19 @@ Regras:
 - `description` e obrigatoria.
 - `description` nao pode conter apenas espacos.
 - `description` tem limite de 200 caracteres.
-- `quantity` deve ser maior que zero.
+- `quantity` e opcional.
+- `quantity`, quando informada, deve ser maior que zero.
+- `unitOfMeasure` e opcional.
+- `unitOfMeasure`, quando informada, aceita `Unit`, `Kg`, `Liter` ou `Package`.
 - `order` e definido automaticamente como a proxima posicao da lista.
+
+Exemplo minimo valido:
+
+```json
+{
+  "description": "Arroz"
+}
+```
 
 ### PUT `/api/shopping-lists/{shoppingListId}/items/{itemId}`
 
@@ -174,11 +188,18 @@ Request:
 ```json
 {
   "description": "Arroz integral",
-  "quantity": 3
+  "quantity": 3,
+  "unitOfMeasure": "Unit"
 }
 ```
 
-Regra: nao e permitido alterar item de outra lista usando o id da lista atual.
+Regras:
+
+- `description` e obrigatoria.
+- `quantity` e opcional.
+- `quantity`, quando informada, deve ser maior que zero.
+- `unitOfMeasure` e opcional.
+- Nao e permitido alterar item de outra lista usando o id da lista atual.
 
 ### DELETE `/api/shopping-lists/{shoppingListId}/items/{itemId}`
 

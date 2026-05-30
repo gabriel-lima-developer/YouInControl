@@ -87,7 +87,7 @@ JWT Bearer e a direcao escolhida, mas ainda nao foi implementado. Enquanto nao h
 
 ## Persistencia
 
-A persistencia usa EF Core e PostgreSQL. Alteracoes estruturais devem ser feitas por migrations controladas, sem recriar banco ou apagar dados manualmente. O piloto mapeia `ShoppingListItem.Description` para a coluna existente `name` para evitar renomeacao desnecessaria.
+A persistencia usa EF Core e PostgreSQL. Alteracoes estruturais devem ser feitas por migrations controladas, sem recriar banco ou apagar dados manualmente. O piloto mapeia `ShoppingListItem.Description` para a coluna existente `name` para evitar renomeacao desnecessaria. Campos opcionais de item, como `quantity` e `unitOfMeasure`, devem preservar compatibilidade com registros antigos.
 
 ## Documentacao de endpoints
 

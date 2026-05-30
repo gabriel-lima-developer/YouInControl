@@ -1,5 +1,8 @@
+using YouInControl.Domain.Mercado;
+
 namespace YouInControl.Application.Mercado.Dtos;
 
 public sealed record CreateShoppingListItemRequest(
     string Description,
-    decimal Quantity);
+    decimal? Quantity,
+    ShoppingListItemUnitOfMeasure? UnitOfMeasure);

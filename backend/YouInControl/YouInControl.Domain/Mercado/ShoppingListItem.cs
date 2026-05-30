@@ -8,11 +8,17 @@ public sealed class ShoppingListItem {
     private ShoppingListItem() {
     }
 
-    internal ShoppingListItem(Guid shoppingListId, string description, decimal quantity, int order) {
+    internal ShoppingListItem(
+        Guid shoppingListId,
+        string description,
+        decimal? quantity,
+        ShoppingListItemUnitOfMeasure? unitOfMeasure,
+        int order) {
         Id = Guid.NewGuid();
         ShoppingListId = shoppingListId;
         Description = NormalizeDescription(description);
         Quantity = NormalizeQuantity(quantity);
+        UnitOfMeasure = unitOfMeasure;
         Order = NormalizeOrder(order);
         IsCompleted = false;
         CreatedAt = DateTime.UtcNow;
@@ -21,16 +27,21 @@ public sealed class ShoppingListItem {
     public Guid Id { get; private set; }
     public Guid ShoppingListId { get; private set; }
     public string Description { get; private set; } = string.Empty;
-    public decimal Quantity { get; private set; }
+    public decimal? Quantity { get; private set; }
+    public ShoppingListItemUnitOfMeasure? UnitOfMeasure { get; private set; }
     public int Order { get; private set; }
     public bool IsCompleted { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
 
-    public void Update(string description, decimal quantity) {
+    public void Update(
+        string description,
+        decimal? quantity,
+        ShoppingListItemUnitOfMeasure? unitOfMeasure) {
         Description = NormalizeDescription(description);
         Quantity = NormalizeQuantity(quantity);
+        UnitOfMeasure = unitOfMeasure;
         Touch();
     }
 
@@ -77,7 +88,11 @@ public sealed class ShoppingListItem {
         return normalizedDescription;
     }
 
-    private static decimal NormalizeQuantity(decimal quantity) {
+    private static decimal? NormalizeQuantity(decimal? quantity) {
+        if (quantity is null) {
+            return null;
+        }
+
         if (quantity <= 0) {
             throw new DomainException("Item quantity must be greater than zero.");
         }

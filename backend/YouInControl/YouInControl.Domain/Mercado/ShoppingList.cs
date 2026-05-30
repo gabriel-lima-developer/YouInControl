@@ -44,9 +44,12 @@ public sealed class ShoppingList {
         Touch();
     }
 
-    public ShoppingListItem AddItem(string description, decimal quantity) {
+    public ShoppingListItem AddItem(
+        string description,
+        decimal? quantity,
+        ShoppingListItemUnitOfMeasure? unitOfMeasure) {
         var nextOrder = _items.Count == 0 ? 1 : _items.Max(item => item.Order) + 1;
-        var item = new ShoppingListItem(Id, description, quantity, nextOrder);
+        var item = new ShoppingListItem(Id, description, quantity, unitOfMeasure, nextOrder);
 
         _items.Add(item);
         Touch();
@@ -54,9 +57,13 @@ public sealed class ShoppingList {
         return item;
     }
 
-    public ShoppingListItem UpdateItem(Guid itemId, string description, decimal quantity) {
+    public ShoppingListItem UpdateItem(
+        Guid itemId,
+        string description,
+        decimal? quantity,
+        ShoppingListItemUnitOfMeasure? unitOfMeasure) {
         var item = GetItem(itemId);
-        item.Update(description, quantity);
+        item.Update(description, quantity, unitOfMeasure);
         Touch();
 
         return item;

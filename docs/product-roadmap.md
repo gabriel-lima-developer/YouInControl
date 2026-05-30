@@ -14,6 +14,7 @@ Este roadmap organiza proximos passos do YouInControl apos a refatoracao visual 
 - Melhorar loading states.
 - Melhorar tratamento de erro no consumo da API.
 - Reavaliar exibicao e edicao de `quantity` nos itens.
+- Adicionar unidade de medida simples para itens de lista de compras. Concluido no BFF.
 - Confirmar se `status` da lista deve voltar a aparecer na UI.
 
 ## Medio prazo
@@ -36,6 +37,7 @@ Este roadmap organiza proximos passos do YouInControl apos a refatoracao visual 
 - Usar IA para gerar listas automaticamente com base em pedidos do usuario.
 - Usar IA para sugerir itens com base no historico de itens adicionados.
 - Usar IA para sugerir receitas com base nos itens marcados como concluidos/comprados.
+- Usar IA para identificar marcas de produtos, sugerir marcas comuns para um item e estimar valores medios para ajudar futuramente na nocao de custo da lista.
 - Criar sugestoes inteligentes de recorrencia de compras.
 - Criar historico de compras.
 - Criar categorias inteligentes.
@@ -63,6 +65,8 @@ Depende de IA:
 - Geracao automatica de listas por pedido do usuario.
 - Sugestao de itens com base no historico.
 - Sugestao de receitas com base em itens comprados.
+- Identificacao e sugestao de marcas de produtos.
+- Estimativa de valores medios de produtos.
 - Sugestoes inteligentes de recorrencia.
 - Categorias inteligentes.
 

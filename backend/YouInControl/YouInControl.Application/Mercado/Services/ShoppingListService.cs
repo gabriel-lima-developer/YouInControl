@@ -125,10 +125,11 @@ public sealed class ShoppingListService : IShoppingListService {
         CreateShoppingListItemRequest request,
         CancellationToken cancellationToken) {
         _logger.LogInformation(
-            "Adding shopping list item. ShoppingListId: {ShoppingListId}, Description: {Description}, Quantity: {Quantity}",
+            "Adding shopping list item. ShoppingListId: {ShoppingListId}, Description: {Description}, Quantity: {Quantity}, UnitOfMeasure: {UnitOfMeasure}",
             shoppingListId,
             request.Description,
-            request.Quantity);
+            request.Quantity,
+            request.UnitOfMeasure);
 
         var shoppingList = await _repository.GetByIdAsync(shoppingListId, includeItems: true, cancellationToken);
 
@@ -137,7 +138,7 @@ public sealed class ShoppingListService : IShoppingListService {
         }
 
         try {
-            var item = shoppingList.AddItem(request.Description, request.Quantity);
+            var item = shoppingList.AddItem(request.Description, request.Quantity, request.UnitOfMeasure);
 
             await _repository.SaveChangesAsync(cancellationToken);
 
@@ -163,7 +164,7 @@ public sealed class ShoppingListService : IShoppingListService {
         }
 
         try {
-            var item = shoppingList.UpdateItem(itemId, request.Description, request.Quantity);
+            var item = shoppingList.UpdateItem(itemId, request.Description, request.Quantity, request.UnitOfMeasure);
             await _repository.SaveChangesAsync(cancellationToken);
 
             return AppResult<ShoppingListItemResponse>.Success(ToItemResponse(item));
@@ -300,6 +301,7 @@ public sealed class ShoppingListService : IShoppingListService {
             item.ShoppingListId,
             item.Description,
             item.Quantity,
+            item.UnitOfMeasure,
             item.Order,
             item.IsCompleted,
             item.CreatedAt,

@@ -237,7 +237,7 @@ dotnet test
 - Infraestrutura Azure e deploy: `docs/infraestrutura-azure.md`
 - Arquitetura: `docs/architecture.md`
 - Endpoints de listas de compras: `docs/api/shopping-lists.md`
-- Decisoes arquiteturais: `docs/adr/`
+- Decisoes arquiteturais: `docs/adr/README.md`
 - Arquitetura do frontend: `docs/frontend/architecture.md`
 - Integracao frontend/BFF: `docs/frontend/api-integration.md`
 - Feature de listas no frontend: `docs/frontend/shopping-lists-feature.md`

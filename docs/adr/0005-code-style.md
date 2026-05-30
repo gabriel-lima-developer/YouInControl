@@ -1,8 +1,8 @@
-# ADR-0005 - Padrao de formatacao e chaves em C#
+# 0005 - Padrao de formatacao e chaves em C#
 
 ## Status
 
-Aceito
+Aceita
 
 ## Contexto
 
@@ -18,3 +18,7 @@ Usar chaves de abertura na mesma linha da declaracao, no estilo K&R, em vez do p
 - Menor retrabalho em revisoes e alteracoes futuras.
 - Alinhamento com a preferencia do mantenedor.
 - Orientacao clara para agentes de IA e futuras contribuicoes.
+
+## Alternativas consideradas
+
+- Usar o padrao Allman tradicional do C#: rejeitado para manter o estilo preferido no projeto.
